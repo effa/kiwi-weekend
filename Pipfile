@@ -12,6 +12,7 @@ black = "*"
 requests-html = "*"
 flake8 = "*"
 unidecode = "*"
+redis = "*"
 
 [requires]
 python_version = "3.6"
