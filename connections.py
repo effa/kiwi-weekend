@@ -16,24 +16,23 @@ def main():
     parser.add_argument('--departure_date')
     args = parser.parse_args()
     connections_data = get_connections(args.source, args.destination, args.departure_date)
-    print(connections_data)
+    print(json.dumps(connections_data))
 
 
-def get_connections(source, destination, departure_date):
-    codes_map = get_city_codes()
-    rates = get_rates()
+def get_connections(source, destination, departure_date, session=None):
+    session = session or HTMLSession()
+    codes_map = get_city_codes(session)
+    rates = get_rates(session)
     source = get_city_code(source, codes_map)
     destination = get_city_code(destination, codes_map)
     # The URL is e.g. 'https://www.elines.cz/jizdenky?from=CZE%7EBrno&to=CZE%7EPrague&forth=2018-12-09&back='
     url = f'https://www.elines.cz/jizdenky?from={source}&to={destination}&forth={departure_date}&back='
-    session = HTMLSession()
     response = session.get(url)
     connections_list = response.html.find(f'.day-1[data-date="{departure_date}"]')
     return [parse_connection_element(el, rates) for el in connections_list]
 
 
-def get_city_codes():
-    session = HTMLSession()
+def get_city_codes(session):
     response = session.get('https://elines.cz/cz/')
     cities_elements = response.html.find('#cities option')
     codes_map = {}
@@ -65,8 +64,7 @@ def parse_connection_element(connection_element, rates):
     return {'departure': departure, 'arrival': arrival, 'price': price}
 
 
-def get_rates():
-    session = HTMLSession()
+def get_rates(session):
     response = session.get('https://api.skypicker.com/rates')
     return response.json()
 
