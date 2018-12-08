@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>Search Result Page</title>
+</head>
+<body>
+  <ul>
+  {% for journey in journeys %}
+    <li>
+    Departure: {{ journey["date"] }} {{ journey["departure"] }}
+    Price: {{ journey["price"] }}
+    </li>
+  {% endfor %}
+  <ul>
+</body>
+</html>
