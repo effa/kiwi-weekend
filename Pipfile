@@ -9,6 +9,7 @@ verify_ssl = true
 requests = "*"
 black = "*"
 requests-html = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.6"
