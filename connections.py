@@ -61,7 +61,7 @@ def get_connections_interval(source, destination, date_from, date_to):
             url = f'https://www.elines.cz/jizdenky?from={source_code}&to={destination_code}&forth={date_string}&back='
             response = session.get(url)
             connection_elements = response.html.find(f'.day-1[data-date="{date_string}"]')
-            connections = [parse_connection_element(el, date_string, rates) for el in connection_elements]
+            connections = [parse_connection_element(el, source, destination, date_string, rates) for el in connection_elements]
             redis.setex(journey_key, 60*60, json.dumps(connections))
             all_journeys.extend(connections)
     return all_journeys
@@ -85,7 +85,7 @@ def get_connections(source, destination, departure_date, session=None):
     url = f'https://www.elines.cz/jizdenky?from={source_code}&to={destination_code}&forth={departure_date}&back='
     response = session.get(url)
     connection_elements = response.html.find(f'.day-1[data-date="{departure_date}"]')
-    connections = [parse_connection_element(el, departure_date, rates) for el in connection_elements]
+    connections = [parse_connection_element(el, source, destination, departure_date, rates) for el in connection_elements]
     redis.setex(journey_key, 60*60, json.dumps(connections))
     return connections
 
@@ -153,12 +153,13 @@ def get_redis_location_key(city_name):
 def get_redis_journey_key(source, destination, departure_date):
     return f'journey:{source}_{destination}_{departure_date}_eurolines'
 
-def parse_connection_element(connection_element, date, rates):
+def parse_connection_element(connection_element, source, destination, date, rates):
     departure = connection_element.find('section.departure > span')[0].text
     arrival = connection_element.find('section.arrival > span')[0].text
     price_czk = min(float(el.text) for el in connection_element.find('section.price .amount'))
     price = czk_to_eur(price_czk, rates)
-    return {'date': date, 'departure': departure, 'arrival': arrival, 'price': price}
+    return {'date': date, 'source': source, 'destination': destination,
+            'departure': departure, 'arrival': arrival, 'price': price}
 
 
 def get_rates(session):
