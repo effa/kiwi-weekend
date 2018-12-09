@@ -51,7 +51,7 @@ def get_connections_interval(source, destination, date_from, date_to):
         pipe.get(journey_key)
     cached_journeys = pipe.execute()
     all_journeys = []
-    for date, journey_key, cached_journey in zip(dates, journey_key, cached_journeys):
+    for date, journey_key, cached_journey in zip(dates, journey_keys, cached_journeys):
         if cached_journey:
             all_journeys.extend(json.loads(cached_journey.decode('utf-8')))
         else:
@@ -62,8 +62,7 @@ def get_connections_interval(source, destination, date_from, date_to):
             response = session.get(url)
             connection_elements = response.html.find(f'.day-1[data-date="{date_string}"]')
             connections = [parse_connection_element(el, date_string, rates) for el in connection_elements]
-            # TODO: Fix caching in redis, it doesn't work now.
-            # redis.setex(journey_key, 60*60, json.dumps(connections))
+            redis.setex(journey_key, 60*60, json.dumps(connections))
             all_journeys.extend(connections)
     return all_journeys
 
