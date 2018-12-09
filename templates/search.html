@@ -1,6 +1,9 @@
 <html>
 <head>
 <title>Search Page</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
   <form action="{{ url_for('search_app') }}" method="post">
@@ -10,5 +13,14 @@
   {{ form.date_to.label }}: {{ form.date_to(size=20) }}
   <input type="submit" value="Search">
   </form>
+
+<script>
+  $(function(){
+      $("#date_from").datepicker({dateFormat: "yy-mm-dd"});
+      $("#date_to").datepicker({dateFormat: "yy-mm-dd"});
+      $("#source").autocomplete({source: "/whisperer", minLength: 2});
+      $("#destination").autocomplete({source: "/whisperer", minLength: 2});
+  });
+</script>
 </body>
 </html>

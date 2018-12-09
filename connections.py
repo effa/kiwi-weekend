@@ -107,8 +107,31 @@ def get_and_cache_city_codes(session, redis):
     return codes_map
 
 
+def get_and_cache_destinations():
+    redis = StrictRedis(socket_connect_timeout=3, **config.get_redis_config())
+    destinations = redis.get('destinations')
+    if destinations:
+        destinations = destinations.decode('utf-8').split(';')
+    else:
+        session = HTMLSession()
+        response = session.get('https://elines.cz/cz/')
+        cities_elements = response.html.find('#cities option')
+        destinations = set()
+        for city_element in cities_elements:
+            code = city_element.attrs['value']
+            names = city_element.text
+            if '~' in code:
+                for name in names.split('('):
+                    name = unidecode(name)
+                    name = re.sub(r'[^\w\s]+', '', name).strip()
+                    destinations.add(name)
+        destinations = list(destinations)
+        redis.setex('destinations', 60*60, ';'.join(destinations))
+    return destinations
+
+
 def normalize(name):
-    name= unidecode(name)
+    name = unidecode(name)
     name = re.sub(r'\W+', '', name)
     name = name.lower()
     return name

@@ -21,6 +21,13 @@ def search_app():
     return render_template('search.html', form=form)
 
 
+@app.route('/whisperer', methods=['GET'])
+def whisper():
+    term = request.args.get('term', '').lower()
+    destinations = connections.get_and_cache_destinations()
+    return jsonify([d for d in destinations if term in d.lower()])
+
+
 #@app.route('/search', methods=['GET'])
 #def search_view():
 #    try:
