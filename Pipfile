@@ -15,6 +15,7 @@ unidecode = "*"
 redis = "*"
 flask = "*"
 jinja2 = "*"
+flask-wtf = "*"
 
 [requires]
 python_version = "3.6"
