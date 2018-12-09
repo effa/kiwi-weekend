@@ -6,9 +6,8 @@
   <ul>
   {% for journey in journeys %}
     <li>
-    Date: {{ journey["date"] }}
-    Departure: {{ journey["departure"] }}
-    Arrival: {{ journey["arrival"] }}
+    Departure: {{ journey["departure_datetime"] }}
+    Arrival: {{ journey["arrival_datetime"] }}
     Price: {{ journey["price"] }}
     </li>
   {% endfor %}

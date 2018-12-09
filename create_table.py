@@ -8,7 +8,7 @@ from config import get_db_config
 def main():
     conn = psycopg2.connect(**get_db_config())
     create_table(conn)
-    #insert_data(conn)
+    insert_data(conn)
     conn.close()
 
 
@@ -52,7 +52,8 @@ def insert_data(conn):
 
 
 def get_data():
-    journeys = connections.get_connections_interval('brno', 'praha', '2018-12-17', '2018-12-19')
+    #journeys = connections.get_connections_interval('praha', 'brno', '2018-12-21', '2018-12-25')
+    journeys = connections.get_connections_interval('brno', 'bratislava', '2018-12-21', '2018-12-25')
     journeys = [enrich(journey) for journey in journeys]
     return journeys
 
